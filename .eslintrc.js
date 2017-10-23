@@ -26,6 +26,6 @@ module.exports = {
     // indent is 0
     'indent': 0,
     // ignore next sentence
-
+    'space-before-function-paren': 0
   }
 }

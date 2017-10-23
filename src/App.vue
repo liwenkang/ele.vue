@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-header></v-header>
+    <v-header :seller="seller"></v-header>
     <div class="tab">
       <div class="tab-item">
         <router-link to="/goods">商品</router-link>
@@ -12,15 +12,30 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <route-view>I am content</route-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
   // 引用
-  import header from './components/header/header.vue'
+  import header from './components/header/header'
+
+  const ERR_OK = 0
 
   export default {
+    data() {
+      return {
+        seller: {}
+      }
+    },
+    created() {
+      this.$http.get('/api/seller').then((response) => {
+        response = response.body
+        if (response.errno === ERR_OK) {
+          this.seller = response.data
+        }
+      })
+    },
     components: {
       'v-header': header
     }
@@ -28,13 +43,25 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+
+
+  // 先写布局
+  // 宽高,不可被继承的,触发重绘的
+  // 字体颜色,可被继承的,不会触发重绘的
   .tab
     display flex
     width 100%
     height 40px
     line-height 40px
+    /* 右边这条是有问题的 border-bottom 1px solid black 会导致在移动端很粗*/
+    border-bottom 1px solid black
     .tab-item
       flex 1
       text-align center
-      text-decoration none
+      & > a
+        display block
+        font-size 14px
+        color rgb(77, 85, 93)
+        &.active
+          color red
 </style>

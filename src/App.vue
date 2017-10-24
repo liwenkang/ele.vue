@@ -43,7 +43,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-
+  @import "common/stylus/_mixins.scss"
 
   // 先写布局
   // 宽高,不可被继承的,触发重绘的
@@ -53,8 +53,8 @@
     width 100%
     height 40px
     line-height 40px
-    /* 右边这条是有问题的 border-bottom 1px solid black 会导致在移动端很粗*/
-    border-bottom 1px solid black
+    /* 右边这条是有问题的 border-bottom 1px solid black 会导致在移动端很粗 */
+    border-1px(rgba(7,17,27,0.2))
     .tab-item
       flex 1
       text-align center

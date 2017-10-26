@@ -96,7 +96,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  @import "../../common/stylus/_mixins.scss"
+  @import "../../common/stylus/_mixins.styl"
 
   // 这是为了引入小图标,我咋就搞不定呢
   @font-face {

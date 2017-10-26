@@ -12,7 +12,7 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <router-view></router-view>
+    <router-view :seller="seller"></router-view>
   </div>
 </template>
 
@@ -43,7 +43,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  @import "common/stylus/_mixins.scss"
+  @import "common/stylus/_mixins.styl"
 
   // 先写布局
   // 宽高,不可被继承的,触发重绘的

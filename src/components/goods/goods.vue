@@ -45,6 +45,7 @@
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll'
+  //  todo 写动画要用啦
   import shopcart from '../shopcart/shopcart'
   import cartcontrol from '../cartcontrol/cartcontrol'
 
@@ -93,6 +94,7 @@
         response = response.body
         if (response.errno === ERR_OK) {
           this.goods = response.data
+
           this.$nextTick(() => {
             // 当计算和dom相关的东西, 要保证他们已经渲染了
             // 数据和dom之间的映射联系起来 实际发生变化在nextTick后
@@ -108,7 +110,7 @@
         // 在新版中, 无需设置这个问题
         let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
         let el = foodList[index]
-        this.foodsScroll.scrollToElement(el, 300) // 移到el这个位置 时间
+        this.foodsScroll.scrollToElement(el, 300) // 移到el这个位置, 时间
       },
       _initScroll() {
         this.meunScroll = new BScroll(this.$refs.menuWrapper, {
@@ -139,10 +141,17 @@
         }
       }
     },
+//        todo 留着写动画
     components: {
       shopcart,
       cartcontrol
     }
+    //        todo 留着写动画
+//    events: {
+//      'cart.add'(target) {
+//        this._drop(target)
+//      }
+//    }
   }
 </script>
 

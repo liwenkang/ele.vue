@@ -38,8 +38,10 @@
         </li>
       </ul>
     </div>
+    <div></div>
     <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"
               :select-foods="selectFoods"></shopcart>
+    <div></div>
     <food :food="selectedFood" ref="food"></food>
   </div>
 </template>
@@ -121,7 +123,7 @@
 // todo 你以为这里不用写动画???
       },
       _initScroll() {
-        this.meunScroll = new BScroll(this.$refs.menuWrapper, {
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {
           click: true
         })
 

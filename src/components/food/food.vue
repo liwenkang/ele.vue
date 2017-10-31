@@ -1,41 +1,46 @@
 <template>
-  <div v-show="showFlag" class="food" ref="food">
-    <div class="food-content">
-      <div class="image-header">
-        <img :src="food.image">
-        <div class="back" @click="hide">
-          <i class="icon-arrow_lift"></i>
+  <div ref="foodWrapper" class="scrollWrapper">
+    <div v-show="showFlag" class="food">
+      <div class="food-content">
+        <div class="image-header">
+          <img :src="food.image">
+          <div class="back" @click="hide">
+            <i class="icon-arrow_lift"></i>
+          </div>
+        </div>
+        <div class="content">
+          <h1 class="title">{{food.name}}</h1>
+          <div class="detail">
+            <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
+          </div>
+          <div class="price">
+            <span class="now"><b class="money">￥</b>{{food.price}}</span>
+            <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
+          </div>
+          <div class="cartcontrol-wrapper">
+            <cartcontrol :food="food"></cartcontrol>
+          </div>
+          <!-- todo 加动画-->
+          <div @click.stop.prevent="addFirst" class="buy" v-show="!food.count || food.count === 0">加入购物车</div>
         </div>
       </div>
-      <div class="content">
-        <h1 class="title">{{food.name}}</h1>
-        <div class="detail">
-          <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
-        </div>
-        <div class="price">
-          <span class="now"><b class="money">￥</b>{{food.price}}</span>
-          <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
-        </div>
-        <div class="cartcontrol-wrapper">
-          <cartcontrol :food="food"></cartcontrol>
-        </div>
-        <!-- todo 加动画-->
-        <div @click.stop.prevent="addFirst" class="buy" v-show="!food.count || food.count === 0">加入购物车</div>
+      <split v-show="food.info"></split>
+      <!-- 商品信息和商品评价应该位于同一个可以滚动的空间里面 -->
+      <div class="info" v-show="food.info">
+        <h1 class="title">商品介绍</h1>
+        <p class="text">{{food.info}}</p>
       </div>
-    </div>
-    <split v-show="food.info"></split>
-    <div class="info" v-show="food.info">
-      <h1 class="title">商品信息</h1>
-      <p class="text">{{food.info}}</p>
+      <split v-show="food.info"></split>
+      <rating :food="food"></rating>
     </div>
   </div>
 </template>
-
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll'
   import cartcontrol from '../cartcontrol/cartcontrol'
   import Vue from 'vue'
   import split from '../split/split.vue'
+  import rating from '../rating/rating.vue'
 
   export default {
     props: {
@@ -53,8 +58,8 @@
         this.showFlag = true
         // 当页面被展示 , 才加scroll
         this.$nextTick(() => {
-          if (!this.scroll) {
-            this.scroll = new BScroll(this.$refs.food, {
+          if (!this.scroll) { // 如果没有加滚动, 那么加上滚动, 如果已经加了, 就刷新一下
+            this.scroll = new BScroll(this.$refs.foodWrapper, {
               clcik: true
             })
           } else {
@@ -75,7 +80,8 @@
     },
     components: {
       cartcontrol,
-      split
+      split,
+      rating
     }
   }
 </script>
@@ -149,6 +155,7 @@
   }
 
   .food
+    /* 它的高度应该是很长的 */
     position fixed
     left 0
     top 0
@@ -180,6 +187,7 @@
     .content
       position relative
       padding 18px
+      background #fff
       .title
         line-height 14px
         margin-bottom 8px
@@ -225,6 +233,7 @@
         background: rgb(0, 160, 220)
     .info
       padding 18px
+      background-color: #fff;
       .title
         line-height 14px
         margin-bottom 6px

@@ -17,11 +17,10 @@
         </div>
       </div>
       <div class="ball-container">
-        <transition name="drop">
+        <!-- todo 这里要写动画 -->
           <div v-for="ball in balls" v-show="ball.show" class="ball">
             <div class="inner"></div>
           </div>
-        </transition>
       </div>
       <div class="shopcart-list" v-show="listShow">
         <div class="list-header">
@@ -170,12 +169,11 @@
         this.fold = !this.fold
       },
       pay() {
-        if(this.totalPrice > this.minPrice) {
+        if (this.totalPrice > this.minPrice) {
           window.alert('你需要支付' + this.totalPrice + '元')
         }
       }
     },
-
     components: {
       cartcontrol
     }

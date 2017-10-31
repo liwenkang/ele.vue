@@ -16,7 +16,7 @@
         <li v-for="item in goods" class="food-list food-list-hook">
           <h1 class="title">{{item.name}}</h1>
           <ul>
-            <li v-for="food in item.foods" class="food-item">
+            <li @click="selectFood(food, $event)" v-for="food in item.foods" class="food-item">
               <div class="icon">
                 <img :src="food.icon" width="57" height="57">
               </div>
@@ -40,6 +40,7 @@
     </div>
     <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"
               :select-foods="selectFoods"></shopcart>
+    <food :food="selectedFood" ref="food"></food>
   </div>
 </template>
 
@@ -48,6 +49,7 @@
   //  todo 写动画要用啦
   import shopcart from '../shopcart/shopcart'
   import cartcontrol from '../cartcontrol/cartcontrol'
+  import food from '../food/food'
 
   const ERR_OK = 0
 
@@ -61,7 +63,8 @@
       return {
         goods: [],
         listHeight: [],
-        scrollY: 0
+        scrollY: 0,
+        selectedFood: {}
       }
     },
     computed: {
@@ -112,6 +115,11 @@
         let el = foodList[index]
         this.foodsScroll.scrollToElement(el, 300) // 移到el这个位置, 时间
       },
+      selectFood(food, event) {
+        this.selectedFood = food
+        this.$refs.food.show()
+// todo 你以为这里不用写动画???
+      },
       _initScroll() {
         this.meunScroll = new BScroll(this.$refs.menuWrapper, {
           click: true
@@ -144,7 +152,8 @@
 //        todo 留着写动画
     components: {
       shopcart,
-      cartcontrol
+      cartcontrol,
+      food
     }
     //        todo 留着写动画
 //    events: {

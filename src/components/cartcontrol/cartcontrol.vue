@@ -1,12 +1,12 @@
 <template>
   <div class="cartcontrol">
     <transition name="move">
-      <div class="cart-decrease" v-show="food.count>0" @click="decrease">
+      <div class="cart-decrease" v-show="food.count>0" @click.stop.prevent="decrease">
         <span class="inner icon-remove_circle_outline"></span>
       </div>
     </transition>
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-    <div class="cart-add icon-add_circle" @click="addCart"></div>
+    <div class="cart-add icon-add_circle" @click.stop.prevent="addCart"></div>
   </div>
 </template>
 
@@ -58,7 +58,7 @@
         transform: rotate(0)
       &.move-enter-active, &.move-leave-active
         transition: all 0.4s linear
-      &.move-enter, &.move-leave-active
+      &.move-enter, &.move-leave
         opacity: 0 // 从实心, 到空心
         transform: translate3d(24px, 0, 0) // 进入, 离开 实现滚动的动画
         .inner

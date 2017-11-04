@@ -13,12 +13,15 @@
       </div>
     </div>
     <router-view :seller="seller"></router-view>
+    <!--<v-shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"-->
+                <!--:select-foods="selectFoods"></v-shopcart>-->
   </div>
 </template>
 
 <script>
   // 引用
-  import header from './components/header/header'
+  import header from './components/header/header.vue'
+//  import shopcart from 'components/shopcart/shopcart.vue'
 
   const ERR_OK = 0
 
@@ -38,6 +41,7 @@
     },
     components: {
       'v-header': header
+//      'v-shopcart': shopcart
     }
   }
 </script>
@@ -54,7 +58,7 @@
     height 40px
     line-height 40px
     /* 右边这条是有问题的 border-bottom 1px solid black 会导致在移动端很粗 */
-    border-1px(rgba(7,17,27,0.2))
+    border-1px(rgba(7, 17, 27, 0.2))
     .tab-item
       flex 1
       text-align center

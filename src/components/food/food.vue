@@ -1,6 +1,8 @@
 <template>
+  <!-- todo 在拖拽时, 1: 没法拖到后面 2: 当拖动超出后, 应该加一个遮罩在后面 -->
   <div ref="foodWrapper" class="scrollWrapper">
     <div v-show="showFlag" class="food">
+      <!---->
       <div class="food-content">
         <div class="image-header">
           <img :src="food.image">
@@ -20,18 +22,21 @@
           <div class="cartcontrol-wrapper">
             <cartcontrol :food="food"></cartcontrol>
           </div>
-          <!-- todo 加动画-->
+          <!--todo 加动画-->
           <div @click.stop.prevent="addFirst" class="buy" v-show="!food.count || food.count === 0">加入购物车</div>
         </div>
       </div>
+
       <split v-show="food.info"></split>
-      <!-- 商品信息和商品评价应该位于同一个可以滚动的空间里面 -->
+      <!--商品信息和商品评价应该位于同一个可以滚动的空间里面 -->
       <div class="info" v-show="food.info">
         <h1 class="title">商品介绍</h1>
         <p class="text">{{food.info}}</p>
       </div>
       <split v-show="food.info"></split>
-      <rating :food="food"></rating>
+
+      <!-- 传了food的ratings -->
+      <rating :food="food" v-if=""></rating>
     </div>
   </div>
 </template>
@@ -68,6 +73,7 @@
         })
       },
       hide() {
+        console.log('点击返回')
         this.showFlag = false
       },
       addFirst() {
@@ -162,7 +168,6 @@
     bottom 48px
     z-index 1
     width 100%
-    background-color #fff
     .image-header
       position relative
       width 100%

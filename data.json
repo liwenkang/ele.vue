@@ -1144,7 +1144,7 @@
     {
       "username": "2******3",
       "rateTime": 1469271264000,
-      "deliveryTime": "",
+      "deliveryTime": "10",
       "score": 4,
       "rateType": 0,
       "deliveryTime": "",
@@ -1157,6 +1157,7 @@
     {
       "username": "3******b",
       "rateTime": 1469261964000,
+      "deliveryTime": "25",
       "score": 3,
       "rateType": 1,
       "text": "",

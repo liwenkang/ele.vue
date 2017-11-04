@@ -42,6 +42,7 @@
     <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"
               :select-foods="selectFoods"></shopcart>
     <div></div>
+    <!-- 这里的food是用来展示商品的详情页的 -->
     <food :food="selectedFood" ref="food"></food>
   </div>
 </template>

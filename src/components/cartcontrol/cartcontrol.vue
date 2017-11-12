@@ -6,6 +6,7 @@
       </div>
     </transition>
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
+    <!-- 点击就会导致食物数量增加, 显示在food.count里面 -->
     <div class="cart-add icon-add_circle" @click.stop.prevent="addCart"></div>
   </div>
 </template>
@@ -22,15 +23,10 @@
     methods: {
       addCart(event) {
         if (!this.food.count) {
-          Vue.set(this.food, 'count', 1)
+          Vue.set(this.food, 'count', 1) // 如果不存在这个属性, 就创建它且赋值为1
         } else {
           this.food.count++
         }
-//        console.log('cartcontrol里面的event target', event.target)
-        // 要把 event.target 传到cart.add 里面当作参数
-//        todo 留着写动画
-//        this.$dispatch('cart.add', event.target)
-        // 当用户点击增加时: 派发一个事件, 触发一个add(event.target)
       },
       decrease() {
         if (this.food.count) {
@@ -58,7 +54,7 @@
         transform: rotate(0)
       &.move-enter-active, &.move-leave-active
         transition: all 0.4s linear
-      &.move-enter, &.move-leave
+      &.move-enter, &.move-leave-active
         opacity: 0 // 从实心, 到空心
         transform: translate3d(24px, 0, 0) // 进入, 离开 实现滚动的动画
         .inner

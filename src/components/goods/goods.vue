@@ -1,55 +1,57 @@
 <template>
-  <div class="goods">
-    <div class="menu-wrapper" ref="menuWrapper">
-      <ul>
-        <li v-for="(item, index) in goods" class="menu-item" :class="{'current':currentIndex === index}"
-            @click="selectMenu(index)">
-          <span class="text">
+  <div>
+    <div class="goods">
+      <div class="menu-wrapper" ref="menuWrapper">
+        <ul>
+          <li v-for="(item, index) in goods" class="menu-item" :class="{'current':currentIndex === index}"
+              @click="selectMenu(index,$event)" ref="menuList">
+          <span class="text border-1px">
             <span v-show="item.type > 0" class="icon" :class="classMap[item.type]"></span>
             {{item.name}}
           </span>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="foods-wrapper" ref="foodsWrapper">
+        <ul>
+          <li v-for="item in goods" class="food-list" ref="foodList">
+            <h1 class="title">{{item.name}}</h1>
+            <ul>
+              <li @click="selectFood(food, $event)" v-for="food in item.foods" class="food-item border-1px">
+                <div class="icon">
+                  <img :src="food.icon" width="57" height="57">
+                </div>
+                <div class="content">
+                  <h2 class="name">{{food.name}}</h2>
+                  <p class="desc">{{food.description}}</p>
+                  <div class="extra">
+                    <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
+                  </div>
+                  <div class="price">
+                    <span class="now"><b class="money">￥</b>{{food.price}}</span><span v-show="food.oldPrice"
+                                                                                       class="old">￥{{food.oldPrice}}</span>
+                  </div>
+                  <div class="cartcontrol-wrapper">
+                    <cartcontrol @add="addFood" :food="food"></cartcontrol>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 本来这个组件是在 goods 这个页面下, 由于三个子组件都会用到这个组件, 所以我直接把它放到父组件上面 -->
+      <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"
+                :select-foods="selectFoods" ref="shopcart"></shopcart>
+      <!-- 这里的food是用来展示在  商品( goods )的详情的 -->
+      <food @add="addFood" :food="selectedFood" ref="food"></food>
     </div>
-    <div class="foods-wrapper" ref="foodsWrapper">
-      <ul>
-        <li v-for="item in goods" class="food-list food-list-hook">
-          <h1 class="title">{{item.name}}</h1>
-          <ul>
-            <li @click="selectFood(food, $event)" v-for="food in item.foods" class="food-item">
-              <div class="icon">
-                <img :src="food.icon" width="57" height="57">
-              </div>
-              <div class="content">
-                <h2 class="name">{{food.name}}</h2>
-                <p class="desc">{{food.description}}</p>
-                <div class="extra">
-                  <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
-                </div>
-                <div class="price">
-                  <span class="now"><b class="money">￥</b>{{food.price}}</span><span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
-                </div>
-                <div class="cartcontrol-wrapper">
-                  <cartcontrol :food="food"></cartcontrol>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-    <div></div>
-    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"
-              :select-foods="selectFoods"></shopcart>
-    <div></div>
-    <!-- 这里的food是用来展示商品的详情页的 -->
-    <food :food="selectedFood" ref="food"></food>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll'
-  //  todo 写动画要用啦
   import shopcart from '../shopcart/shopcart'
   import cartcontrol from '../cartcontrol/cartcontrol'
   import food from '../food/food'
@@ -76,12 +78,13 @@
           let height1 = this.listHeight[i]
           let height2 = this.listHeight[i + 1]
           if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+            this._followScroll(i) // 这是啥???
             return i
           }
         }
         return 0
       },
-      selectFoods() {
+      selectFoods() { // 这是把当前选择的食物 真正加在底部的购物车里面
         let foods = []
         this.goods.forEach((good) => {
           good.foods.forEach((food) => {
@@ -100,7 +103,6 @@
         response = response.body
         if (response.errno === ERR_OK) {
           this.goods = response.data
-
           this.$nextTick(() => {
             // 当计算和dom相关的东西, 要保证他们已经渲染了
             // 数据和dom之间的映射联系起来 实际发生变化在nextTick后
@@ -114,35 +116,41 @@
       selectMenu(index) {
         // 在旧版better-scroll中, 移动端自动阻止点击点击事件,所以要设置click: true, PC端不会阻止这个默认事件
         // 在新版中, 无需设置这个问题
-        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let foodList = this.$refs.foodList
         let el = foodList[index]
-        this.foodsScroll.scrollToElement(el, 300) // 移到el这个位置, 时间
+        this.foodsScroll.scrollToElement(el, 300)
       },
       selectFood(food, event) {
         this.selectedFood = food
         this.$refs.food.show()
-// todo 你以为这里不用写动画???
+      },
+      addFood(target) {
+        this._drop(target)
+      },
+      _drop(target) {
+        this.$nextTick(function () {
+          this.$refs.shopcart.drop(target)
+        })
       },
       _initScroll() {
-        this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+        this.meunScroll = new BScroll(this.$refs.menuWrapper, {
           click: true
         })
 
         this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
           click: true,
-          probeType: 3 // 像素级的触发scroll事件!!!
-          /*
-          *https://ustbhuangyi.github.io/better-scroll/doc/zh-hans/options.html#probetype
-          * 作用：有时候我们需要知道滚动的位置。当 probeType 为 1 的时候，会非实时（屏幕滑动超过一定时间后）派发scroll 事件；当 probeType 为 2 的时候，会在屏幕滑动的过程中实时的派发 scroll 事件；当 probeType 为 3 的时候，不仅在屏幕滑动的过程中，而且在 momentum 滚动动画运行过程中实时派发 scroll 事件。如果没有设置该值，其默认值为 0，即不派发 scroll 事件。
-          * */
+          probeType: 3
         })
 
         this.foodsScroll.on('scroll', (pos) => {
-          this.scrollY = Math.abs(Math.round(pos.y))
+          // 判断滑动方向，避免下拉时分类高亮错误（如第一分类商品数量为1时，下拉使得第二分类高亮）
+          if (pos.y <= 0) {
+            this.scrollY = Math.abs(Math.round(pos.y))
+          }
         })
       },
       _calculateHeight() {
-        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let foodList = this.$refs.foodList
         let height = 0
         this.listHeight.push(height)
         for (let i = 0; i < foodList.length; i++) {
@@ -150,20 +158,18 @@
           height += item.clientHeight
           this.listHeight.push(height)
         }
+      },
+      _followScroll(index) {
+        let menuList = this.$refs.menuList
+        let el = menuList[index]
+        this.meunScroll.scrollToElement(el, 300, 0, -100)
       }
     },
-//        todo 留着写动画
     components: {
       shopcart,
       cartcontrol,
       food
     }
-    //        todo 留着写动画
-//    events: {
-//      'cart.add'(target) {
-//        this._drop(target)
-//      }
-//    }
   }
 </script>
 

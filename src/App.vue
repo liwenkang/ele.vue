@@ -1,9 +1,10 @@
 <template>
   <div>
+    <!-- 把data传给header -->
     <v-header :seller="seller"></v-header>
     <div class="tab">
       <div class="tab-item">
-        <router-link to="/goods">商品</router-link>
+        <router-link to="/goods" ref="commodity">商品</router-link>
       </div>
       <div class="tab-item">
         <router-link to="/ratings">评论</router-link>
@@ -12,36 +13,46 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <router-view :seller="seller"></router-view>
-    <!--<v-shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"-->
-                <!--:select-foods="selectFoods"></v-shopcart>-->
+    <!-- 把data传给中间的那段 商品, 评论, 商家 -->
+    <keep-alive>
+      <router-view :seller="seller"></router-view>
+    </keep-alive>
+    <!-- 从商品那个里面把购买 商品价格, 名称放购物车里面 -->
+    <!-- 也就是我要从子组件 goods 里面将 用户选择的食物:selectFoods="selectFoods" 数据传递给父组件, 然后从父组件再传给子组件 -->
+    <!--<shopcart :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice" @selectFoods="getUser"></shopcart>-->
   </div>
 </template>
 
 <script>
   // 引用
+  import {urlParse} from './common/js/utill'
   import header from './components/header/header.vue'
-//  import shopcart from 'components/shopcart/shopcart.vue'
 
   const ERR_OK = 0
 
   export default {
     data() {
       return {
-        seller: {}
+        seller: {
+          id: (() => {
+            let queryParam = urlParse()
+            return queryParam.id
+          })()
+        } // 这是自定义的数据, 就相当于是data
       }
     },
     created() {
-      this.$http.get('/api/seller').then((response) => {
+      this.$http.get('/api/seller?id=' + this.seller.id).then((response) => {
+        console.log(this.seller.id)
         response = response.body
         if (response.errno === ERR_OK) {
-          this.seller = response.data
+          // this.seller = response.data // 获得了data里的seller了// 给对象扩展属性的方法
+          this.seller = Object.assign({}, this.seller, response.data)
         }
       })
     },
     components: {
       'v-header': header
-//      'v-shopcart': shopcart
     }
   }
 </script>

@@ -2,69 +2,71 @@
 <template>
   <!-- todo 当拖动超出后, 应该加一个遮罩在后面-->
   <transition name="move">
-  <div v-show="showFlag" class="food" ref="foodWrapper">
-    <div>
-      <div class="food-content">
-        <div class="image-header">
-          <img :src="food.image">
-          <div class="back" @click="hide">
-            <i class="icon-arrow_lift"></i>
+    <div v-show="showFlag" class="food" ref="foodWrapper">
+      <div>
+        <div class="food-content">
+          <div class="image-header">
+            <img :src="food.image">
+            <div class="back" @click="hide">
+              <i class="icon-arrow_lift"></i>
+            </div>
+          </div>
+          <div class="content">
+            <h1 class="title">{{food.name}}</h1>
+            <div class="detail">
+              <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
+            </div>
+            <div class="price">
+              <span class="now"><b class="money">￥</b>{{food.price}}</span>
+              <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
+            </div>
+            <div class="cartcontrol-wrapper">
+              <cartcontrol :food="food" @add="addFood"></cartcontrol>
+            </div>
+            <transition name="fade">
+              <div @click.stop.prevent="addFirst" class="buy" v-show="!food.count || food.count === 0">加入购物车</div>
+            </transition>
           </div>
         </div>
-        <div class="content">
-          <h1 class="title">{{food.name}}</h1>
-          <div class="detail">
-            <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
-          </div>
-          <div class="price">
-            <span class="now"><b class="money">￥</b>{{food.price}}</span>
-            <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
-          </div>
-          <div class="cartcontrol-wrapper">
-            <cartcontrol :food="food"></cartcontrol>
-          </div>
-          <div @click.stop.prevent="addFirst" class="buy" v-show="!food.count || food.count === 0">加入购物车</div>
+
+        <split v-show="food.info"></split>
+        <!--商品信息和商品评价应该位于同一个可以滚动的空间里面 -->
+        <div class="info" v-show="food.info">
+          <h1 class="title">商品介绍</h1>
+          <p class="text">{{food.info}}</p>
         </div>
-      </div>
 
-      <split v-show="food.info"></split>
-      <!--商品信息和商品评价应该位于同一个可以滚动的空间里面 -->
-      <div class="info" v-show="food.info">
-        <h1 class="title">商品介绍</h1>
-        <p class="text">{{food.info}}</p>
-      </div>
+        <split v-show="food.info"></split>
 
-      <split v-show="food.info"></split>
+        <div class="ratings">
+          <h1 class="title">商品评价</h1>
+          <!-- 这是一个抽象的组件,用于用户的评价 -->
+          <ratingselect @select="selectRating" @toggle="toggleContent" :selectType="selectType"
+                        :onlyContent="onlyContent" :desc="desc"
+                        :ratings="food.ratings"></ratingselect>
 
-      <div class="ratings">
-        <h1 class="title">商品评价</h1>
-        <!-- 这是一个抽象的组件,用于用户的评价 -->
-        <ratingselect @select="selectRating" @toggle="toggleContent" :selectType="selectType"
-                      :onlyContent="onlyContent" :desc="desc"
-                      :ratings="food.ratings"></ratingselect>
-
-        <div class="rating-wrapper">
-          <ul v-show="food.ratings && food.ratings.length">
-            <li v-show="needShow(rating.rateType, rating.text)" v-for="rating in food.ratings"
-                class="rating-item border-1px">
-              <div class="user">
-                <span class="name">{{rating.username}}</span>
-                <img class="avatar" :src="rating.avatar" width="12" height="12">
-              </div>
-              <div class="time">{{rating.rateTime | formatDate}}</div>
-              <p class="text">
+          <div class="rating-wrapper">
+            <ul v-show="food.ratings && food.ratings.length">
+              <li v-show="needShow(rating.rateType, rating.text)" v-for="rating in food.ratings"
+                  class="rating-item border-1px">
+                <div class="user">
+                  <span class="name">{{rating.username}}</span>
+                  <img class="avatar" :src="rating.avatar" width="12" height="12">
+                </div>
+                <div class="time">{{rating.rateTime | formatDate}}</div>
+                <p class="text">
                   <span
                     :class="{'icon-thumb_up':rating.rateType===0, 'icon-thumb_down':rating.rateType===1}"></span>{{rating.text}}
-              </p>
-            </li>
-          </ul>
-          <div class="no-rating" v-show="!food.ratings || !food.ratings.length">
-            暂无评价
+                </p>
+              </li>
+            </ul>
+            <div class="no-rating" v-show="!food.ratings || !food.ratings.length">
+              暂无评价
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   </transition>
 </template>
 <script type="text/ecmascript-6">
@@ -126,7 +128,6 @@
 //        this.$dispatch('cart.add', event.target)
         this.$emit('add', event.target)
         Vue.set(this.food, 'count', 1)
-        this.food.count = 1
       },
       needShow(type, text) {
         if (this.onlyContent && !text) {
@@ -137,6 +138,9 @@
         } else {
           return type === this.selectType // 判断是否相等, 若相等, 则返回
         }
+      },
+      addFood(target) {
+        this.$emit('add', target)
       },
       selectRating(type) {
         this.selectType = type
@@ -319,6 +323,12 @@
         border-radius 12px
         color #fff
         background: rgb(0, 160, 220)
+        opacity: 1
+        &.fade-enter-active, &.fade-leave-active
+          transition: all 0.4s
+        &.fade-enter, &.fade-leave-active
+          opacity: 0
+          z-index: -1
     .info
       padding 18px
       background-color #fff

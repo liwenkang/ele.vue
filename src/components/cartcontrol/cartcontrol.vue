@@ -23,10 +23,11 @@
     methods: {
       addCart(event) {
         if (!this.food.count) {
-          Vue.set(this.food, 'count', 1) // 如果不存在这个属性, 就创建它且赋值为1
+          Vue.set(this.food, 'count', 1)
         } else {
           this.food.count++
         }
+        this.$emit('add', event.target)
       },
       decrease() {
         if (this.food.count) {

@@ -158,6 +158,7 @@
     methods: {
       drop(el) {
         for (let i = 0; i < this.balls.length; i++) {
+          // 5 个ball
           let ball = this.balls[i]
           if (!ball.show) {
             ball.show = true
@@ -189,6 +190,8 @@
         }
       },
       addFood(target) {
+        // 增加食物， 就触发add
+        console.log("触发动画!!!!")
         this.drop(target)
       },
       beforeDrop(el) {
@@ -228,7 +231,6 @@
         }
       }
     },
-
     components: {
       cartcontrol
     }
@@ -397,13 +399,13 @@
         left: 32px
         bottom: 22px
         z-index: 200
-        transition: all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)
+        transition: all 0.8s cubic-bezier(0.49, -0.29, 0.75, 0.41)
         .inner
           width: 16px
           height: 16px
           border-radius: 50%
           background: rgb(0, 160, 220)
-          transition: all 0.4s linear
+          transition: all 0.8s linear
     .shopcart-list
       position: absolute
       left: 0
